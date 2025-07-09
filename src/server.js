@@ -11,12 +11,12 @@ console.log("PORT =", process.env.PORT);
 console.log("MONGO_URI =", process.env.MONGO_URI);
 
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('✅ MongoDB connecté'))
-  .catch(err => console.log('❌ Erreur connexion MongoDB:', err));
+  .then(() => console.log('MongoDB connecté'))
+  .catch(err => console.log('Erreur connexion MongoDB:', err));
 
 app.get('/', (req, res) => res.send('Backend opérationnel'));
 app.use('/api/users', userRoutes);
-
+//listen sur port 5000
 app.listen(process.env.PORT, () => {
-  console.log(`🚀 Serveur lancé sur http://localhost:${process.env.PORT}`);
+  console.log(` Serveur lancé sur http://localhost:${process.env.PORT}`);
 });
