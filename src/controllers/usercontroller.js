@@ -1,25 +1,53 @@
-const User = require('../models/User');
+const User = require("../models/User");
 
-const getUsers = async (req, res) => {
+// ➕ Ajouter un utilisateur
+exports.createUser = async (req, res) => {
+  try {
+    const user = new User(req.body);
+    await user.save();
+    res.status(201).json(user);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+// 📋 Lister tous les utilisateurs
+exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find();
     res.json(users);
-  } catch (error) {
-    res.status(500).json({ message: 'Erreur serveur' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
-const createUser = async (req, res) => {
-  const { name, email } = req.body;
+
+// 🔍 Obtenir un seul utilisateur
+exports.getUserById = async (req, res) => {
   try {
-    const user = new User({ name, email });
-    await user.save();
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(400).json({ message: 'Erreur lors de la création' });
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "Utilisateur non trouvé" });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-module.exports = { getUsers, createUser };
+// ✏️ Modifier un utilisateur
+exports.updateUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(user);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
 
-
-
+// 🗑 Supprimer un utilisateur
+exports.deleteUser = async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: "Utilisateur supprimé" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
