@@ -1,17 +1,77 @@
+const jwt = require('jsonwebtoken');
 const User = require("../models/User");
 
-// ➕ Ajouter un utilisateur
+// Génération du token JWT
+const genereteToken = (user) => {
+  return jwt.sign(
+    { id: user._id, email: user.email, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: '30d' }
+  );
+};
+
+// Enregistrement public - rôle forcé à "client"
+exports.register = async (req, res) => {
+  try {
+    const { nom, prenom, email, mdp, adresse, statut,role } = req.body;
+
+    const user = new User({
+      nom,
+      prenom,
+      email,
+      mdp,
+      adresse,
+      statut,
+      role // rôle forcé pour éviter qu'un inscrit devienne admin
+    });
+
+    await user.save();
+    const token = genereteToken(user);
+    res.status(201).json({ user, token });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Connexion utilisateur
+exports.login = async (req, res) => {
+  try {
+    const { email, mdp } = req.body;
+    const user = await User.findOne({ email });
+    if (!user || user.mdp !== mdp) {
+      return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
+    }
+    const token = genereteToken(user);
+    res.json({ user, token });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Création utilisateur (admin uniquement) - rôle pris en compte ou par défaut "client"
 exports.createUser = async (req, res) => {
   try {
-    const user = new User(req.body);
+    const { nom, prenom, email, mdp, adresse, statut, role } = req.body;
+
+    const user = new User({
+      nom,
+      prenom,
+      email,
+      mdp,
+      adresse,
+      statut,
+      role  // rôle depuis la requête sinon "client"
+    });
+
     await user.save();
-    res.status(201).json(user);
+    const token = genereteToken(user);
+    res.status(201).json({ user, token });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
-// 📋 Lister tous les utilisateurs
+// Lister tous les utilisateurs (admin)
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find();
@@ -21,7 +81,7 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-// 🔍 Obtenir un seul utilisateur
+// Récupérer un utilisateur par ID
 exports.getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -32,9 +92,10 @@ exports.getUserById = async (req, res) => {
   }
 };
 
-// ✏️ Modifier un utilisateur
+// Modifier un utilisateur
 exports.updateUser = async (req, res) => {
   try {
+    // Exemple simple : autoriser modification role si tu veux (ajoute contrôle si besoin)
     const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(user);
   } catch (err) {
@@ -42,7 +103,7 @@ exports.updateUser = async (req, res) => {
   }
 };
 
-// 🗑 Supprimer un utilisateur
+// Supprimer un utilisateur (admin)
 exports.deleteUser = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);

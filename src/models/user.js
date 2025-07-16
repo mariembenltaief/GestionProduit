@@ -6,8 +6,8 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true },
   mdp: { type: String, required: true },
   adresse: { type: String, required: true },
-  statut: { type: String, enum: ['actif', 'inactif', 'bloqué'], default: 'actif' },
-  role: { type: String, enum: ['admin', 'client', 'fournisseur', 'livreur'], default: 'client' },
+  statut: { type: String },
+  role: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
 
