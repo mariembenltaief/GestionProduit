@@ -2,13 +2,17 @@ const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config({ path: __dirname + '/.env' });
 const userRoutes = require('./routes/userRoutes');
-
+const categorieRoutes = require("./routes/categorieRoutes");
+const produitRoutes = require("./routes/produitRoutes");
+const commandeRoutes = require("./routes/commandeRoutes");
+const ligneCommandeRoutes = require("./routes/ligneCommandeRoutes");
+const livraisonRoutes = require("./routes/livraisonRoutes");
+const rapportRoutes = require("./routes/rapportRoutes");
+const alerteStockRoutes = require("./routes/alerteStockRoutes");
 const app = express();
 app.use(express.json());
 
-console.log("🔍 DEBUG .env");
-console.log("PORT =", process.env.PORT);
-console.log("MONGO_URI =", process.env.MONGO_URI);
+
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connecté'))
@@ -16,6 +20,13 @@ mongoose.connect(process.env.MONGO_URI)
 
 app.get('/', (req, res) => res.send('Backend opérationnel'));
 app.use('/api/users', userRoutes);
+app.use("/api/categories", categorieRoutes);
+app.use("/api/rapports", rapportRoutes);
+app.use("/api/produits", produitRoutes);
+app.use("/api/commandes", commandeRoutes);
+app.use("/api/livraisons", livraisonRoutes);
+app.use("/api/alertesstock", alerteStockRoutes);
+app.use("/api/lignescommandes", ligneCommandeRoutes);
 //listen sur port 5000
 app.listen(process.env.PORT, () => {
   console.log(` Serveur lancé sur http://localhost:${process.env.PORT}`);
