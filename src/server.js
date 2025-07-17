@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config({ path: __dirname + '/.env' });
 const userRoutes = require('./routes/userRoutes');
-<<<<<<< Updated upstream
 const categorieRoutes = require("./routes/categorieRoutes");
 const produitRoutes = require("./routes/produitRoutes");
 const commandeRoutes = require("./routes/commandeRoutes");
@@ -10,18 +9,12 @@ const ligneCommandeRoutes = require("./routes/ligneCommandeRoutes");
 const livraisonRoutes = require("./routes/livraisonRoutes");
 const rapportRoutes = require("./routes/rapportRoutes");
 const alerteStockRoutes = require("./routes/alerteStockRoutes");
-=======
-
->>>>>>> Stashed changes
 const app = express();
 app.use(express.json());
 
-console.log("🔍 DEBUG .env");
-console.log("PORT =", process.env.PORT);
-console.log("MONGO_URI =", process.env.MONGO_URI);
+
 
 mongoose.connect(process.env.MONGO_URI)
-<<<<<<< Updated upstream
   .then(() => console.log('MongoDB connecté'))
   .catch(err => console.log('Erreur connexion MongoDB:', err));
 
@@ -37,14 +30,4 @@ app.use("/api/lignescommandes", ligneCommandeRoutes);
 //listen sur port 5000
 app.listen(process.env.PORT, () => {
   console.log(` Serveur lancé sur http://localhost:${process.env.PORT}`);
-=======
-  .then(() => console.log('✅ MongoDB connecté'))
-  .catch(err => console.log('❌ Erreur connexion MongoDB:', err));
-
-app.get('/', (req, res) => res.send('Backend opérationnel'));
-app.use('/api/users', userRoutes);
-
-app.listen(process.env.PORT, () => {
-  console.log(`🚀 Serveur lancé sur http://localhost:${process.env.PORT}`);
->>>>>>> Stashed changes
 });
