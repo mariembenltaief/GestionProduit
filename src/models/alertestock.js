@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const alerteStockSchema = new mongoose.Schema({
   idProduit: { type: mongoose.Schema.Types.ObjectId, ref: "Produit", required: true },
   seuilMinimum: { type: Number, required: true },
-  dateAlerte: { type: Date, default: Date.now },
+  dateAlerte: { type: String },
   statutAlerte: { type: String, enum: ['active', 'résolue'], default: 'active' }
 });
 

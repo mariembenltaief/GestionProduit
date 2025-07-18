@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const commandeSchema = new mongoose.Schema({
   numeroCommande: { type: String, unique: true, required: true },
-  dateCommande: { type: Date, default: Date.now },
+  dateCommande: { type: String },
   statutCommande: { 
     type: String, 
     enum: ['en attente', 'confirmée', 'en préparation', 'expédiée', 'livrée', 'annulée'], 
@@ -12,8 +12,14 @@ const commandeSchema = new mongoose.Schema({
   taxesAppliquees: { type: Number, default: 0 },
   adresseLivraison: { type: String, required: true },
   modePaiement: { type: String, required: true },
-  datePaiement: Date,
+  datePaiement:{type: String},
   // Tu peux ajouter la relation à l'utilisateur, ligne commande, etc.
+
+  client: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  }
 });
 
 commandeSchema.methods.calculerTotal = function() {

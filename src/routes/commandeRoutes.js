@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const commandeController = require("../controllers/commandeController");
+const { authenticateToken, authByRole } = require("../middlewares/auth");
 
-router.post("/", commandeController.createCommande);
-router.get("/", commandeController.getAllCommandes);
+router.get("/mescommandes",authenticateToken , authByRole("client"), commandeController.getMyCommandes);
+router.post("/",authenticateToken,authByRole("client"), commandeController.createCommande);
+router.get("/",authenticateToken, authByRole("admin"), commandeController.getAllCommandes);
 router.get("/:id", commandeController.getCommandeById);
 router.put("/:id", commandeController.updateCommande);
 router.delete("/:id", commandeController.deleteCommande);
