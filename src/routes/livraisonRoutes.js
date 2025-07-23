@@ -9,5 +9,5 @@ router.get("/",authenticateToken,authByRole("admin"), livraisonController.getAll
 router.get("/:id", livraisonController.getLivraisonById);
 router.put("/:id", livraisonController.updateLivraison);
 router.delete("/:id", livraisonController.deleteLivraison);
-
+router.put('/:id/confirmer',authenticateToken,authByRole('fournisseur'),livraisonController.confirmerLivraison);
 module.exports = router;

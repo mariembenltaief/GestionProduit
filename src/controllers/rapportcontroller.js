@@ -86,3 +86,59 @@ exports.deleteRapport = async (req, res) => {
     });
   }
 };
+const Vente = require('../models/Vente');
+
+// Création d'une vente (route POST)
+exports.creerVente = async (req, res) => {
+  try {
+    const { produit, quantite, prixUnitaire } = req.body;
+    const fournisseur = req.user._id;
+
+    const vente = new Vente({
+      produit,
+      quantite,
+      prixUnitaire,
+      fournisseur
+    });
+
+    await vente.save();
+    res.status(201).json({ message: 'Vente créée', vente });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Statistiques dynamiques pour le fournisseur connecté (route GET)
+exports.getMesVentes = async (req, res) => {
+  try {
+    const fournisseurId = req.user._id;
+
+    // Total commandes (nombre de ventes)
+    const totalCommandes = await Vente.countDocuments({ fournisseur: fournisseurId });
+
+    // Total produits vendus (somme des quantités)
+    const totalProduitsVendusAgg = await Vente.aggregate([
+      { $match: { fournisseur: fournisseurId } },
+      { $group: { _id: null, totalQuantite: { $sum: '$quantite' } } }
+    ]);
+    const totalProduitsVendus = totalProduitsVendusAgg[0]?.totalQuantite || 0;
+
+    // Chiffre d'affaires (somme prixUnitaire * quantite)
+    const chiffreAffairesAgg = await Vente.aggregate([
+      { $match: { fournisseur: fournisseurId } },
+      { $group: { _id: null, totalCA: { $sum: { $multiply: ['$prixUnitaire', '$quantite'] } } } }
+    ]);
+    const chiffreAffaires = chiffreAffairesAgg[0]?.totalCA || 0;
+
+    res.json({
+      message: `Statistiques de ventes pour le fournisseur ${req.user.nom}`,
+      totalCommandes,
+      totalProduitsVendus,
+      chiffreAffaires
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur serveur', error: error.message });
+  }
+};
+

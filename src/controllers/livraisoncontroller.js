@@ -107,3 +107,26 @@ exports.getMyLivraisons = async (req, res) => {
     });
   }
 };
+// 🔐 Confirmer une livraison (changer son statut)
+exports.confirmerLivraison = async (req, res) => {
+  try {
+    const livraison = await Livraison.findById(req.params.id);
+    if (!livraison) {
+      return res.status(404).json({ message: "❌ Livraison non trouvée" });
+    }
+
+    // Modifier ici le statut selon ta logique (exemple)
+    livraison.statutLivraison = req.body.statutLivraison || "confirmée";
+    await livraison.save();
+
+    res.json({
+      message: "✅ Livraison confirmée avec succès",
+      livraison,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "❌ Erreur lors de la confirmation de la livraison",
+      error: err.message,
+    });
+  }
+};
