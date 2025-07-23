@@ -4,9 +4,15 @@ const livraisonSchema = new mongoose.Schema({
   dateExpedition: Date,
   dateLivraisonPrevue: Date,
   dateLivraisonEffective: Date,
-  statutLivraison: { type: String, enum: ['en transit', 'livrée', 'en attente'], default: 'en attente' },
-  notesLivreur: String,
-  signatureClient: String // URL ou base64
+  statutLivraison: { type: String, enum: ['en transit','confirmée','livrée', 'en attente'], default: 'en attente' },
+  notesLivreur: { type :String},
+  signatureClient:{ type :String}, // URL ou base64
+  
+  client:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    }
 });
 
 livraisonSchema.methods.suivreStatut = function() {

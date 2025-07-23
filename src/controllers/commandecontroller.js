@@ -3,7 +3,10 @@ const Commande = require("../models/Commande");
 // ✅ Créer une nouvelle commande
 exports.createCommande = async (req, res) => {
   try {
-    const commande = new Commande(req.body);
+    const commande = new Commande({
+      ...req.body,
+      client: req.user._id
+    });
     await commande.save();
     res.status(201).json({
       message: "✅ Commande créée avec succès",
@@ -69,5 +72,22 @@ exports.deleteCommande = async (req, res) => {
     res.json({ message: "✅ Commande supprimée avec succès" });
   } catch (err) {
     res.status(500).json({ message: "❌ Échec de la suppression de la commande", error: err.message });
+  }
+};
+
+// ✅ Voir les commandes du client connecté
+exports.getMyCommandes = async (req, res) => {
+  try {
+    const commandes = await Commande.find({ client: req.user._id }).sort({ dateCommande: -1 });
+
+    res.status(200).json({
+      message: " Vos commandes récupérées avec succès",
+      commandes,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: " Erreur lors de la récupération des commandes du client",
+      error: err.message,
+    });
   }
 };

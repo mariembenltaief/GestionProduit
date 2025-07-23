@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 // 🔐 Vérifie le token (middleware protect)
-const protect = async (req, res, next) => {
+const authenticateToken = async (req, res, next) => {
   let token;
 
   if (
@@ -28,6 +28,7 @@ const authByRole = (...roles) => {
     if (!req.user) {
       return res.status(401).json({ message: 'Non autorisé' });
     }
+    
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({ message: 'Accès refusé : rôle non autorisé' });
     }
@@ -35,4 +36,4 @@ const authByRole = (...roles) => {
   };
 };
 
-module.exports = { protect, authByRole };
+module.exports = { authenticateToken, authByRole };

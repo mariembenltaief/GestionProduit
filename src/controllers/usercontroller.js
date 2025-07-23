@@ -32,6 +32,34 @@ exports.register = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+// Modifier le profil de l'utilisateur connecté
+exports.updateProfile = async (req, res) => {
+  try {
+    // req.user._id est défini par authenticateToken
+    const userId = req.user._id;
+
+    // Met à jour l'utilisateur avec les données reçues dans req.body
+    const updatedUser = await User.findByIdAndUpdate(userId, req.body, {
+      new: true,              // Renvoie le document mis à jour
+      runValidators: true,    // Valide les champs selon le schéma
+      select: '-mdp'          // Ne pas renvoyer le mot de passe
+    });
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+
+    res.json({
+      message: "Profil mis à jour avec succès",
+      user: updatedUser,
+    });
+  } catch (err) {
+    res.status(400).json({
+      message: "Erreur lors de la mise à jour du profil",
+      error: err.message,
+    });
+  }
+};
 
 // Connexion utilisateur
 exports.login = async (req, res) => {
